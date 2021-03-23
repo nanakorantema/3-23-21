@@ -1,0 +1,27 @@
+---
+title: "classwork"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Causal vs. Predictive Models
+
+income ~ liberalism
+
+- Predictive models care nothing about causation
+- Every model is predictive, in the sense that, if we give you new data — and it is drawn from a stable distribution — then you can create a predictive forecast
+- so it has some quality that cannot be changed/ is independent of new factor--> for example age
+ex. if you change your political ideology your pay won't change
+
+Causal->
+- existing correlative relationship?
+- "no causation without manipulation" - you need some type of treatment that can manipulate the situation
+- potential outcomes- change in income
+
+potential outcomes of what?
+  - income as outcome variable-> income over 100k and below 100k
+
+
