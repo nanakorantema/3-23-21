@@ -5,9 +5,14 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(primer.data)
+library(rstanarm)
+library(tidyverse)
 ```
 
 # Causal vs. Predictive Models
+
+you can use a causal model to make predictions, but it can do more. 
 
 income ~ liberalism
 
@@ -20,8 +25,63 @@ Causal->
 - existing correlative relationship?
 - "no causation without manipulation" - you need some type of treatment that can manipulate the situation
 - potential outcomes- change in income
+- cannot randomly assign some people to be liberal or non- liberal
 
 potential outcomes of what?
   - income as outcome variable-> income over 100k and below 100k
 
+```{r}
+# Today, we will look at liberal as a function of income. Note that we should
+# first transform income by dividing it by 100,000. That is, income is now in
+# units of 100k dollars, whereas before it was in units of one dollar. This does
+# not change the substance, but it makes interpretation easier.
+
+#Today’s question: Consider the set of people who make $100,000. What proportion of them are liberal?
+  
+# Create a model, fit_1, of liberal as a function of income. Use this model to
+# answer our question. Create a nice graphic.
+
+new_trains <- trains %>% 
+                mutate(small_income = income/100000)
+
+fit_1 <- fit_obj <- stan_glm(data = new_trains, 
+                            formula = liberal ~ small_income, 
+                            family = binomial,
+                            refresh = 0,
+                            seed = 87)
+
+print(fit_1)
+```
+
+y_1 = beta_1 + beta_0 + income_small + epsilon_1
+```{r notes}
+# family relates to the left hand side variable 0/1 binomial, gaussian- continuous 
+#mad_sd- > spread
+#median- > location
+# median of our posterior distribution for mu (beta_0) -> the median .6, 
+# 95% confident that 1.0 between .2 mean 
+#mad_sd standard error -> .4
+
+
+newobs <- tibble(small_income = 1)
+
+pe <- posterior_epred(fit_1, newobs) %>% 
+    as_tibble() 
+    
+pe %>% 
+   ggplot(aes(x = `1`)) +
+    geom_histogram(aes(y = after_stat(count/sum(count))),
+                   bins = 100) +
+    labs(title = "Posterior Probability Distribution for the Percentake of Population
+         Which Makes $100,000",
+         subtitle = "The population of people that make 100k is likely to have 
+         a similar number of liberal and non-liberal people",
+         x = "Probability that Population is Liberal ",
+         y = "Probability",
+         caption = "Data source: trains") + 
+    scale_x_continuous(labels = scales::percent_format(accuracy = 1)) +
+    scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+    theme_classic()
+
+```
 
