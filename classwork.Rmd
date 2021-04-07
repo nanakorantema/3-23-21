@@ -44,7 +44,7 @@ potential outcomes of what?
 new_trains <- trains %>% 
                 mutate(small_income = income/100000)
 
-fit_1 <- fit_obj <- stan_glm(data = new_trains, 
+fit_1 <-  <- stan_glm(data = new_trains, 
                             formula = liberal ~ small_income, 
                             family = binomial,
                             refresh = 0,
